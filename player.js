@@ -99,7 +99,7 @@
     const squareHeight = canvas.height - outerPadding * 2;
 
     const radius = 1;
-    ctx.strokeStyle = "#333";
+    ctx.strokeStyle = "#0000bd";
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(radius + 0.5, 0.5);
@@ -150,7 +150,7 @@
           b
         )})`;
       } else if (maxStat !== null && i < maxStat) {
-        ctx.fillStyle = "#2ecc71";
+        ctx.fillStyle = "#50be00";
       } else continue;
       ctx.fillRect(x, y, squareWidth, squareHeight);
     }

@@ -30,7 +30,6 @@
       { regex: /.*/, max: 13 },
       { regex: /not very fast/i, max: 7 },
     ],
-
     // Pitchers
     Velocity: [
       { regex: /unhittable/i, max: 20 },
@@ -73,6 +72,16 @@
     Arm: 4,
   };
 
+  const potToESI = {
+    10: "80–87",
+    11: "88–95",
+    12: "96–103",
+    13: "104–111",
+    14: "112–119",
+    15: "120–127",
+    16: "128–135",
+  };
+
   function getMaxStatFromReport(reportText, stat) {
     const rules = statConfigs[stat];
     if (!rules) return null;
@@ -93,51 +102,26 @@
     const totalSquares = 20;
     const outerPadding = 2;
     const gap = 1;
-    const availableWidth =
-      canvas.width - outerPadding * 2 - gap * (totalSquares - 1);
-    const squareWidth = availableWidth / totalSquares;
+    const squareWidth =
+      (canvas.width - outerPadding * 2 - gap * (totalSquares - 1)) /
+      totalSquares;
     const squareHeight = canvas.height - outerPadding * 2;
 
-    const radius = 1;
     ctx.strokeStyle = "#0000bd";
     ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(radius + 0.5, 0.5);
-    ctx.lineTo(canvas.width - radius - 0.5, 0.5);
-    ctx.quadraticCurveTo(
-      canvas.width - 0.5,
-      0.5,
-      canvas.width - 0.5,
-      radius + 0.5
-    );
-    ctx.lineTo(canvas.width - 0.5, canvas.height - radius - 0.5);
-    ctx.quadraticCurveTo(
-      canvas.width - 0.5,
-      canvas.height - 0.5,
-      canvas.width - radius - 0.5,
-      canvas.height - 0.5
-    );
-    ctx.lineTo(radius + 0.5, canvas.height - 0.5);
-    ctx.quadraticCurveTo(
-      0.5,
-      canvas.height - 0.5,
-      0.5,
-      canvas.height - radius - 0.5
-    );
-    ctx.lineTo(0.5, radius + 0.5);
-    ctx.quadraticCurveTo(0.5, 0.5, radius + 0.5, 0.5);
-    ctx.closePath();
-    ctx.stroke();
+    ctx.strokeRect(0.5, 0.5, canvas.width - 1, canvas.height - 1);
 
     for (let i = 0; i < totalSquares; i++) {
       const x = outerPadding + i * (squareWidth + gap);
       const y = outerPadding;
       if (i < currentStat) {
         const t = i / (totalSquares - 1);
-        let r, g, b;
+        let r = 0,
+          g = 0,
+          b = 0;
         if (t <= 0.5) {
           const factor = t / 0.5;
-          r = 0 + factor * (0x6b - 0x00);
+          r = factor * 0x6b;
           g = 0;
           b = 0xbc + factor * (0x6a - 0xbc);
         } else {
@@ -170,41 +154,68 @@
     if (!table) return;
 
     const rows = table.querySelectorAll("tr");
-    const scoutingCell = Array.from(rows).find((r) =>
-      /Scouting Report:/i.test(r.textContent)
-    );
-    const reportText = scoutingCell
-      ? scoutingCell.textContent.toLowerCase()
-      : "";
+    const scoutingText =
+      Array.from(rows)
+        .find((r) => /Scouting Report:/i.test(r.textContent))
+        ?.textContent.toLowerCase() || "";
 
     Object.keys(statColumnIndex).forEach((stat) => {
-      let row;
-      for (const r of rows) {
-        if (new RegExp(stat + ":", "i").test(r.textContent)) {
-          row = r;
-          break;
-        }
-      }
+      const row = Array.from(rows).find((r) =>
+        new RegExp(stat + ":", "i").test(r.textContent)
+      );
       if (!row) return;
 
-      const idx = statColumnIndex[stat];
-      const cell = row.querySelectorAll("td")[idx];
+      const cell = row.querySelectorAll("td")[statColumnIndex[stat]];
       if (!cell) return;
 
-      const statText = cell.textContent.trim().match(/\d+/);
-      const currentStat = statText ? parseInt(statText[0], 10) : 0;
-      const maxStat = getMaxStatFromReport(reportText, stat);
+      const currentStat = parseInt(
+        cell.textContent.match(/\d+/)?.[0] || "0",
+        10
+      );
+      const maxStat = getMaxStatFromReport(scoutingText, stat);
 
       drawStatBar(cell, currentStat, maxStat);
     });
+  }
+
+  function annotatePotential() {
+    const table = document.querySelector(".player-card tbody");
+    if (!table) return;
+
+    const potentialRow = Array.from(table.querySelectorAll("tr")).find(
+      (tr) =>
+        tr.querySelectorAll("td")[3] &&
+        /Potential:/i.test(tr.querySelectorAll("td")[3].textContent)
+    );
+    if (!potentialRow) return;
+
+    const potCell = potentialRow.querySelectorAll("td")[4];
+    if (!potCell) return;
+
+    const potNum = parseInt(potCell.textContent.match(/\d+/)?.[0], 10);
+    const potentialESI = potToESI[potNum];
+    if (!potentialESI) return;
+
+    const children = Array.from(potCell.childNodes);
+    potCell.textContent = "";
+    children.forEach((c) => potCell.appendChild(c));
+
+    const span = document.createElement("span");
+    span.textContent = ` (${potentialESI})`;
+    potCell.appendChild(span);
+  }
+
+  function init() {
+    annotateStats();
+    annotatePotential();
   }
 
   if (
     document.readyState === "complete" ||
     document.readyState === "interactive"
   ) {
-    annotateStats();
+    init();
   } else {
-    document.addEventListener("DOMContentLoaded", annotateStats);
+    document.addEventListener("DOMContentLoaded", init);
   }
 })();

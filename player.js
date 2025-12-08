@@ -18,7 +18,6 @@
       { regex: /amazing in the field/i, max: 20 },
       { regex: /outstanding in the field/i, max: 17 },
       { regex: /solid in the field/i, max: 15 },
-      { regex: /nothing/i, max: 12 },
       { regex: /below average fielder/i, max: 9 },
       { regex: /poor fielder/i, max: 7 },
       { regex: /atrocious fielder/i, max: 6 },

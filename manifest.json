@@ -3,15 +3,12 @@
   "version": "0.1",
   "manifest_version": 3,
   "description": "A helper extension for Broken Bat.",
-  "content_scripts": [
-    {
-      "matches": ["https://brokenbat.org/roster/*"],
-      "js": ["roster.js"]
-    },
-    {
-      "matches": ["https://brokenbat.org/player/*"],
-      "js": ["player.js"]
-    }
-  ],
-  "host_permissions": ["https://brokenbat.org/*"]
+  "permissions": ["storage", "scripting", "tabs", "activeTab"],
+  "host_permissions": ["https://brokenbat.org/*"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
 }

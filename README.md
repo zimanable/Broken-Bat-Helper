@@ -1,7 +1,5 @@
 # Broken-Bat-Helper
 
-<img src="images/screenshot.png" width="400" />
-
 An extention for Broken Bat
 
 Screenshots:

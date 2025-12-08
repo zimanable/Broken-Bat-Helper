@@ -1,5 +1,6 @@
 (function () {
   const statConfigs = {
+    // Hitters
     Hitting: [
       { regex: /great hitter/i, max: 20 },
       { regex: /very good hitter/i, max: 17 },
@@ -29,14 +30,43 @@
       { regex: /.*/, max: 13 },
       { regex: /not very fast/i, max: 7 },
     ],
+
+    // Pitchers
+    Velocity: [
+      { regex: /unhittable/i, max: 20 },
+      { regex: /strike out pitcher/i, max: 18 },
+      { regex: /major league fastball/i, max: 16 },
+      { regex: /have some pop/i, max: 14 },
+      { regex: /.*/, max: 12 },
+    ],
+    Movement: [
+      { regex: /exceptional/i, max: 20 },
+      { regex: /major league/i, max: 17 },
+      { regex: /.*/, max: 14 },
+    ],
+    Stamina: [
+      { regex: /throw all day/i, max: 20 },
+      { regex: /starting pitcher/i, max: 17 },
+      { regex: /.*/, max: 14 },
+      { regex: /few innings/i, max: 8 },
+    ],
+    Control: [
+      { regex: /control will always be below average/i, max: 10 },
+      { regex: /lacking/i, max: 8 },
+      { regex: /wild/i, max: 6 },
+      { regex: /.*/, max: 20 },
+    ],
   };
 
-  // Map the correct td index for each stat
   const statColumnIndex = {
     Hitting: 2,
     Power: 2,
     Fielding: 4,
     Speed: 2,
+    Velocity: 2,
+    Movement: 2,
+    Stamina: 2,
+    Control: 2,
     "Bat Control": 2,
     "Plate Discipline": 2,
     Range: 4,
@@ -45,15 +75,14 @@
 
   function getMaxStatFromReport(reportText, stat) {
     const rules = statConfigs[stat];
-    if (!rules) return null; // no scouting report for this stat
+    if (!rules) return null;
     for (const r of rules) {
       if (r.regex.test(reportText)) return r.max;
     }
-    return 0;
+    return null;
   }
 
   function drawStatBar(cell, currentStat, maxStat = null) {
-    // Remove existing img, canvas, and clear text
     cell.innerHTML = "";
 
     const canvas = document.createElement("canvas");
@@ -69,7 +98,6 @@
     const squareWidth = availableWidth / totalSquares;
     const squareHeight = canvas.height - outerPadding * 2;
 
-    // Outer rounded frame
     const radius = 1;
     ctx.strokeStyle = "#333";
     ctx.lineWidth = 1;
@@ -101,11 +129,9 @@
     ctx.closePath();
     ctx.stroke();
 
-    // Draw squares
     for (let i = 0; i < totalSquares; i++) {
       const x = outerPadding + i * (squareWidth + gap);
       const y = outerPadding;
-
       if (i < currentStat) {
         const t = i / (totalSquares - 1);
         let r, g, b;
@@ -129,7 +155,6 @@
       ctx.fillRect(x, y, squareWidth, squareHeight);
     }
 
-    // Prepend canvas and show numbers
     cell.prepend(canvas);
     canvas.style.marginRight = "5px";
 
@@ -152,18 +177,7 @@
       ? scoutingCell.textContent.toLowerCase()
       : "";
 
-    const allStats = [
-      "Hitting",
-      "Power",
-      "Fielding",
-      "Speed",
-      "Bat Control",
-      "Plate Discipline",
-      "Range",
-      "Arm",
-    ];
-
-    allStats.forEach((stat) => {
+    Object.keys(statColumnIndex).forEach((stat) => {
       let row;
       for (const r of rows) {
         if (new RegExp(stat + ":", "i").test(r.textContent)) {
@@ -179,7 +193,7 @@
 
       const statText = cell.textContent.trim().match(/\d+/);
       const currentStat = statText ? parseInt(statText[0], 10) : 0;
-      const maxStat = getMaxStatFromReport(reportText, stat); // null for non-scouted stats
+      const maxStat = getMaxStatFromReport(reportText, stat);
 
       drawStatBar(cell, currentStat, maxStat);
     });

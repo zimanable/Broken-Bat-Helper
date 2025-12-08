@@ -26,8 +26,8 @@
     Speed: [
       { regex: /really quick/i, max: 20 },
       { regex: /decent speed/i, max: 17 },
-      { regex: /.*/, max: 13 },
       { regex: /not very fast/i, max: 7 },
+      { regex: /.*/, max: 13 },
     ],
     // Pitchers
     Velocity: [
@@ -45,8 +45,8 @@
     Stamina: [
       { regex: /throw all day/i, max: 20 },
       { regex: /starting pitcher/i, max: 17 },
-      { regex: /.*/, max: 14 },
       { regex: /few innings/i, max: 8 },
+      { regex: /.*/, max: 14 },
     ],
     Control: [
       { regex: /control will always be below average/i, max: 10 },

@@ -39,7 +39,8 @@
     ],
     Movement: [
       { regex: /exceptional/i, max: 20 },
-      { regex: /major league/i, max: 17 },
+      { regex: /major league slider/i, max: 17 },
+      { regex: /major league curveball/i, max: 17 },
       { regex: /.*/, max: 14 },
     ],
     Stamina: [

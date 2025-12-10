@@ -21,7 +21,7 @@ Adds two new columns:
 ### Player Page
 
 - **Green squares** indicate the maximum value of each attribute based on the scouting report.
-- **Numeric values** are displayed in parentheses next to each attribute.
+- **Numeric max values** are displayed in parentheses next to each attribute.
 - **Expected SI** is shown in parentheses next to the potential rating.
 
 ---

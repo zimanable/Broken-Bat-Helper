@@ -1,6 +1,6 @@
 {
   "name": "Broken Bat Helper",
-  "version": "0.1",
+  "version": "0.2",
   "manifest_version": 3,
   "description": "A helper extension for Broken Bat.",
   "permissions": ["storage", "scripting", "tabs", "activeTab"],
@@ -10,5 +10,12 @@
   },
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://brokenbat.org/player/*"],
+      "js": ["player-type.js"],
+      "run_at": "document_idle"
+    }
+  ]
 }
